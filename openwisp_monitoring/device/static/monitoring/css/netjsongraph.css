@@ -75,6 +75,8 @@
 .njg-container .njg-tooltip {
   background: #fff !important;
   border: none !important;
+  z-index: 2147483647 !important;
+  pointer-events: none;
 }
 .njg-container .njg-tooltip-item {
   display: flex;
@@ -97,4 +99,9 @@
   flex-wrap: wrap;
   flex-basis: 60%;
   color: #000;
+}
+/* Ensure ECharts HTML tooltip (when appended to body) appears above all */
+.echarts-tooltip {
+  z-index: 2147483647 !important;
+  pointer-events: none;
 }

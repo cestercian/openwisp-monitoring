@@ -221,7 +221,10 @@
       })),
       echartsOption: {
         tooltip: {
-          confine: true,
+          renderMode: "html",
+          appendToBody: true,
+          confine: false,
+          extraCssText: "z-index: 2147483647; pointer-events: none;",
           formatter: function (params) {
             let n = params.data?.node || params.data;
             if (n?.id && blockedTooltipIds.has(n.id)) {
@@ -346,6 +349,32 @@
           }
         } catch (err) {
           console.error("Unable to fit NetJSON bounds:", err);
+        }
+
+        // Ensure ECharts tooltip settings are resilient in fullscreen
+        try {
+          const reapplyTooltip = function () {
+            if (!map.echarts || !map.echarts.setOption) return;
+            map.echarts.setOption(
+              {
+                tooltip: {
+                  show: true,
+                  renderMode: "html",
+                  appendToBody: true,
+                  confine: false,
+                  extraCssText:
+                    "z-index: 2147483647; pointer-events: none;",
+                },
+              },
+              { notMerge: true },
+            );
+          };
+          // Apply immediately and on fullscreen toggle
+          reapplyTooltip();
+          map.leaflet.on("enterFullscreen", reapplyTooltip);
+          map.leaflet.on("exitFullscreen", reapplyTooltip);
+        } catch (e) {
+          console.warn("Unable to adjust ECharts tooltip for fullscreen", e);
         }
 
         // Restrict horizontal panning to three wrapped worlds
